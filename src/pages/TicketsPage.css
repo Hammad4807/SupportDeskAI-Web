@@ -1,0 +1,78 @@
+.table-wrap {
+  overflow-x: auto;
+  border-top: 1px solid var(--color-border);
+}
+
+.ticket-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.ticket-table th {
+  height: 36px;
+  padding: 0 8px;
+  border-bottom: 2px solid var(--color-border);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-subtle);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.ticket-table td {
+  height: 40px;
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
+}
+
+.ticket-table tbody tr {
+  cursor: pointer;
+}
+
+.ticket-table tbody tr:hover {
+  background: var(--color-bg-neutral-subtle-hover);
+}
+
+.ticket-table__key {
+  color: var(--color-text-subtle);
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.ticket-table__key:hover {
+  color: var(--color-link);
+  text-decoration: underline;
+}
+
+.ticket-table__title {
+  max-width: 0; /* lets the cell shrink so the ellipsis works */
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.col-key {
+  width: 80px;
+}
+
+.col-status,
+.col-priority,
+.col-date {
+  white-space: nowrap;
+}
+
+.col-date {
+  color: var(--color-text-subtle);
+}
+
+.skeleton-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 40px;
+  padding: 0 8px;
+  border-bottom: 1px solid var(--color-border);
+}
