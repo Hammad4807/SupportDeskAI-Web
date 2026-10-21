@@ -52,6 +52,7 @@ export default function TicketDetailPage() {
           icon={<CircleAlert size={32} />}
           title={state.error.title}
           description={state.error.message}
+          traceId={state.error.traceId}
           action={
             <button type="button" className="btn btn--default" onClick={retry}>
               <RefreshCw size={16} aria-hidden="true" /> Try again

@@ -1,9 +1,10 @@
 import { useCallback, useState } from 'react'
-import { Outlet } from 'react-router'
+import { Outlet, useLocation } from 'react-router'
 import TopNav from './TopNav.tsx'
 import Sidebar from './Sidebar.tsx'
 import CreateTicketModal from '../CreateTicketModal.tsx'
 import Flag from '../Flag.tsx'
+import ErrorBoundary from '../ErrorBoundary.tsx'
 import type { LayoutContext } from '../../hooks/useLayout.ts'
 import type { Ticket } from '../../types/ticket.ts'
 import './layout.css'
@@ -13,6 +14,7 @@ export default function AppLayout() {
   const [isCreateOpen, setCreateOpen] = useState(false)
   const [createdTicket, setCreatedTicket] = useState<Ticket | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
+  const location = useLocation()
 
   const handleCreated = (ticket: Ticket) => {
     setCreateOpen(false)
@@ -31,7 +33,10 @@ export default function AppLayout() {
       <div className="app-body">
         <Sidebar />
         <main className="app-main">
-          <Outlet context={context} />
+          {/* A crash inside a page keeps the nav and sidebar usable; key resets it after navigating away. */}
+          <ErrorBoundary key={location.pathname}>
+            <Outlet context={context} />
+          </ErrorBoundary>
         </main>
       </div>
 

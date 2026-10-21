@@ -266,6 +266,22 @@ a {
   color: var(--color-text-subtle);
 }
 
+/* "Error ID: ..." line under server errors */
+.state-message__trace,
+.banner__trace {
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 12px;
+  color: var(--color-text-subtlest);
+}
+
+.state-message__trace {
+  margin: -12px 0 20px;
+}
+
+.banner__trace {
+  margin-top: 4px;
+}
+
 /* ---------- Flag (toast) ---------- */
 .flag {
   position: fixed;
