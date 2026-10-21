@@ -8,12 +8,14 @@ import PriorityIcon from '../components/PriorityIcon.tsx'
 import StateMessage from '../components/StateMessage.tsx'
 import StatusSelect from '../components/StatusSelect.tsx'
 import EditTicketForm from '../components/EditTicketForm.tsx'
+import AiInsightsPanel from '../components/AiInsightsPanel.tsx'
 import { isValidTicketId, PRIORITY, PRIORITY_VALUES, ticketKey } from '../utils/ticketMeta.ts'
 import { formatDateTime, formatRelative } from '../utils/format.ts'
 import type { Ticket, TicketPriority, TicketStatus } from '../types/ticket.ts'
 import './TicketDetailPage.css'
 
-// Jira-style issue view for one ticket (FR-03), with editing (FR-04) and status changes (FR-05).
+// Jira-style issue view for one ticket (FR-03), with editing (FR-04), status changes (FR-05)
+// and AI insights (FR-06).
 export default function TicketDetailPage() {
   const { id } = useParams()
   const validId = isValidTicketId(id)
@@ -126,6 +128,8 @@ export default function TicketDetailPage() {
                 </section>
               </>
             )}
+
+            <AiInsightsPanel ticket={state.data} onTicketUpdated={setData} />
           </div>
 
           <aside className="issue__side">
