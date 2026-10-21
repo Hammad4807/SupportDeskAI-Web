@@ -89,3 +89,50 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ---------- Draft reply ---------- */
+.draft {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border);
+}
+
+.draft__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.draft__title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.draft__notice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  background: #fff7d6;
+  color: #7f5f01;
+  font-weight: 500;
+}
+
+.draft__text {
+  background: var(--color-bg);
+}
+
+.draft__actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}

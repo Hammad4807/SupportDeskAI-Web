@@ -3,6 +3,8 @@ import { LoaderCircle, Sparkles } from 'lucide-react'
 import { analyzeTicket, getTicket } from '../api/tickets.ts'
 import { toApiError, type ApiError } from '../api/client.ts'
 import type { Ticket } from '../types/ticket.ts'
+import DraftReplyBox from './DraftReplyBox.tsx'
+import ProviderBadge from './ProviderBadge.tsx'
 import './AiInsightsPanel.css'
 
 interface AiInsightsPanelProps {
@@ -10,7 +12,7 @@ interface AiInsightsPanelProps {
   onTicketUpdated: (ticket: Ticket) => void
 }
 
-// "AI insights" section on the ticket page (FR-06).
+// "AI insights" section on the ticket page: analysis (FR-06) and draft reply (FR-07).
 // The analysis is validated and saved by the API, so after it succeeds we reload the ticket
 // to show the new priority and category everywhere on the page.
 export default function AiInsightsPanel({ ticket, onTicketUpdated }: AiInsightsPanelProps) {
@@ -90,16 +92,8 @@ export default function AiInsightsPanel({ ticket, onTicketUpdated }: AiInsightsP
           </p>
         )
       )}
-    </section>
-  )
-}
 
-// Small label showing which AI produced the result. The mock is clearly marked.
-export function ProviderBadge({ provider }: { provider: string }) {
-  const isMock = provider === 'Mock'
-  return (
-    <span className={`provider-badge${isMock ? ' provider-badge--mock' : ''}`} title={isMock ? 'Fake AI used for development' : 'Real AI provider'}>
-      {isMock ? 'Mock AI' : provider}
-    </span>
+      <DraftReplyBox ticketId={ticket.id} />
+    </section>
   )
 }
