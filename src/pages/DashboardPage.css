@@ -1,0 +1,75 @@
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.summary-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-top: 3px solid var(--card-accent);
+  border-radius: var(--radius);
+  background: var(--color-bg);
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.summary-card--link:hover {
+  background: var(--color-bg-sunken);
+  box-shadow: var(--shadow-overlay);
+}
+
+.summary-card__label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.summary-card__value {
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 40px;
+  font-variant-numeric: tabular-nums;
+}
+
+.summary-card__skeleton {
+  display: inline-block;
+  width: 48px;
+  height: 28px;
+  vertical-align: middle;
+}
+
+.summary-card__hint {
+  font-size: 12px;
+  color: var(--color-text-subtlest);
+}
+
+/* Top border colour per card, matching the status lozenges */
+.summary-card--neutral {
+  --card-accent: #8590a2;
+}
+
+.summary-card--info {
+  --card-accent: #1d7afc;
+}
+
+.summary-card--success {
+  --card-accent: #22a06b;
+}
+
+.summary-card--closed {
+  --card-accent: #44546f;
+}
+
+.summary-card--danger {
+  --card-accent: var(--color-priority-high);
+}
+
+.summary-card--ai {
+  --card-accent: #8270db;
+}

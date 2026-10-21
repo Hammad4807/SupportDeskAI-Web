@@ -8,7 +8,7 @@ interface TopNavProps {
 export default function TopNav({ onCreate }: TopNavProps) {
   return (
     <header className="top-nav">
-      <Link to="/tickets" className="top-nav__logo">
+      <Link to="/dashboard" className="top-nav__logo">
         <span className="top-nav__logo-mark" aria-hidden="true">
           <svg viewBox="0 0 32 32" width="24" height="24">
             <rect width="32" height="32" rx="6" fill="currentColor" />
