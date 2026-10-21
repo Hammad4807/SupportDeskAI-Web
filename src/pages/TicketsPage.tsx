@@ -13,7 +13,7 @@ import './TicketsPage.css'
 // Jira "List" view of all tickets (FR-02).
 export default function TicketsPage() {
   const { refreshKey, openCreateModal } = useLayout()
-  const { state, retry } = useAsync((signal) => getTickets(signal), [refreshKey])
+  const { state, retry } = useAsync((signal) => getTickets({}, signal), [refreshKey])
   const navigate = useNavigate()
 
   return (
