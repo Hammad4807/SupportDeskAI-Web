@@ -11,6 +11,11 @@ export interface Ticket {
   description: string
   status: TicketStatus
   priority: TicketPriority
+  // AI analysis results: null until the ticket has been analyzed
+  category: string | null
+  sentiment: string | null
+  aiSummary: string | null
+  suggestedAction: string | null
   createdAt: string // ISO date, UTC
   updatedAt: string | null // null until the ticket is modified
 }
@@ -19,4 +24,53 @@ export interface Ticket {
 export interface CreateTicketRequest {
   title: string
   description: string
+}
+
+// UpdateTicketRequest DTO (PUT /api/tickets/{id})
+export interface UpdateTicketRequest {
+  title: string
+  description: string
+  priority: TicketPriority
+}
+
+// TicketQueryParameters DTO: optional filters for GET /api/tickets
+export interface TicketFilters {
+  status?: TicketStatus
+  priority?: TicketPriority
+  category?: string
+}
+
+// "Groq" is the real AI, "Mock" the fake one used without an API key
+export type AiProvider = 'Groq' | 'Mock' | string
+
+// TicketAnalysisResponse DTO (POST /api/tickets/{id}/analyze)
+export interface TicketAnalysis {
+  ticketId: string
+  category: string
+  priority: TicketPriority
+  sentiment: string
+  summary: string
+  suggestedAction: string
+  provider: AiProvider
+}
+
+// DraftReplyResponse DTO (POST /api/tickets/{id}/draft-reply). Never saved, never sent.
+export interface DraftReply {
+  ticketId: string
+  draft: string
+  provider: AiProvider
+  isSent: boolean // always false
+  notice: string
+  generatedAt: string
+}
+
+// DashboardSummaryResponse DTO (GET /api/dashboard/summary)
+export interface DashboardSummary {
+  total: number
+  open: number
+  inProgress: number
+  resolved: number
+  closed: number
+  highPriority: number
+  unanalyzed: number
 }

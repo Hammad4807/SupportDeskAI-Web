@@ -19,6 +19,23 @@ export const PRIORITY: Record<TicketPriority, { name: string }> = {
   3: { name: 'Critical' },
 }
 
+// Same allowed values as the backend AiAllowedValues (the AI may only return these).
+export const CATEGORIES = [
+  'Account Access',
+  'Billing',
+  'Technical Issue',
+  'Bug Report',
+  'Feature Request',
+  'General Inquiry',
+  'Other',
+] as const
+
+export const SENTIMENTS = ['Positive', 'Neutral', 'Negative', 'Frustrated', 'Angry'] as const
+
+// All four values, for dropdowns: [0, 1, 2, 3]
+export const STATUS_VALUES: TicketStatus[] = [0, 1, 2, 3]
+export const PRIORITY_VALUES: TicketPriority[] = [0, 1, 2, 3]
+
 // Jira-style short key for display: first 8 characters of the UUID,
 // e.g. "3f2b8c1e-4a7d-..." -> "SD-3F2B8C1E". URLs and API calls use the full id.
 export const ticketKey = (id: string) => `SD-${id.slice(0, 8).toUpperCase()}`

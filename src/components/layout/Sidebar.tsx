@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router'
-import { ListTodo } from 'lucide-react'
+import { LayoutDashboard, ListTodo } from 'lucide-react'
 
-// Project sidebar. More links (Dashboard, Board) are added in later steps.
+// Project sidebar with the main navigation links.
 export default function Sidebar() {
   return (
     <nav className="sidebar" aria-label="Project">
@@ -14,6 +14,10 @@ export default function Sidebar() {
       </div>
 
       <div className="sidebar__section-label">Support</div>
+      <NavLink to="/dashboard" className={({ isActive }) => `sidebar__link${isActive ? ' is-active' : ''}`}>
+        <LayoutDashboard size={16} aria-hidden="true" />
+        Dashboard
+      </NavLink>
       <NavLink to="/tickets" className={({ isActive }) => `sidebar__link${isActive ? ' is-active' : ''}`}>
         <ListTodo size={16} aria-hidden="true" />
         Tickets

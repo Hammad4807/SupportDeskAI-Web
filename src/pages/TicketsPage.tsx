@@ -1,20 +1,50 @@
-import { Link, useNavigate } from 'react-router'
-import { CircleAlert, Inbox, Plus, RefreshCw } from 'lucide-react'
+import { Link, useNavigate, useSearchParams } from 'react-router'
+import { CircleAlert, FilterX, Inbox, Plus, RefreshCw } from 'lucide-react'
 import { getTickets } from '../api/tickets.ts'
 import { useAsync } from '../hooks/useAsync.ts'
 import { useLayout } from '../hooks/useLayout.ts'
 import StatusLozenge from '../components/StatusLozenge.tsx'
 import PriorityIcon from '../components/PriorityIcon.tsx'
 import StateMessage from '../components/StateMessage.tsx'
-import { ticketKey } from '../utils/ticketMeta.ts'
+import { CATEGORIES, PRIORITY, PRIORITY_VALUES, STATUS, STATUS_VALUES, ticketKey } from '../utils/ticketMeta.ts'
 import { formatDate, formatDateTime } from '../utils/format.ts'
+import type { TicketFilters, TicketPriority, TicketStatus } from '../types/ticket.ts'
 import './TicketsPage.css'
 
-// Jira "List" view of all tickets (FR-02).
+// Reads "?status=0&priority=2&category=Billing" from the URL. Unknown values are ignored,
+// so a link like /tickets?status=0 (from the dashboard) opens the list already filtered.
+function readFilters(params: URLSearchParams): TicketFilters {
+  const toLevel = (value: string | null) => {
+    const n = Number(value)
+    return value !== null && value !== '' && Number.isInteger(n) && n >= 0 && n <= 3 ? n : undefined
+  }
+  return {
+    status: toLevel(params.get('status')) as TicketStatus | undefined,
+    priority: toLevel(params.get('priority')) as TicketPriority | undefined,
+    category: params.get('category') || undefined,
+  }
+}
+
+// Jira "List" view of all tickets (FR-02), with filters (status, priority, category).
 export default function TicketsPage() {
   const { refreshKey, openCreateModal } = useLayout()
-  const { state, retry } = useAsync((signal) => getTickets(signal), [refreshKey])
+  const [searchParams, setSearchParams] = useSearchParams()
+  const filters = readFilters(searchParams)
+  const hasFilters = filters.status !== undefined || filters.priority !== undefined || !!filters.category
+
+  // The filters live in the URL, so the list reloads whenever the query string changes.
+  const { state, retry } = useAsync((signal) => getTickets(filters, signal), [refreshKey, searchParams.toString()])
   const navigate = useNavigate()
+
+  // Sets (or removes, when value is '') one filter in the URL.
+  const setFilter = (name: keyof TicketFilters, value: string) => {
+    const next = new URLSearchParams(searchParams)
+    if (value === '') next.delete(name)
+    else next.set(name, value)
+    setSearchParams(next)
+  }
+
+  const clearFilters = () => setSearchParams(new URLSearchParams())
 
   return (
     <div className="page">
@@ -30,6 +60,51 @@ export default function TicketsPage() {
           <span className="page__count">
             {state.data.length} {state.data.length === 1 ? 'ticket' : 'tickets'}
           </span>
+        )}
+      </div>
+
+      {/* Jira-style filter bar */}
+      <div className="filter-bar" role="search" aria-label="Filter tickets">
+        <label className="filter">
+          <span className="filter__label">Status</span>
+          <select className="filter__select" value={filters.status ?? ''} onChange={(e) => setFilter('status', e.target.value)}>
+            <option value="">All</option>
+            {STATUS_VALUES.map((s) => (
+              <option key={s} value={s}>
+                {STATUS[s].name}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="filter">
+          <span className="filter__label">Priority</span>
+          <select className="filter__select" value={filters.priority ?? ''} onChange={(e) => setFilter('priority', e.target.value)}>
+            <option value="">All</option>
+            {PRIORITY_VALUES.map((p) => (
+              <option key={p} value={p}>
+                {PRIORITY[p].name}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="filter">
+          <span className="filter__label">Category</span>
+          <select className="filter__select" value={filters.category ?? ''} onChange={(e) => setFilter('category', e.target.value)}>
+            <option value="">All</option>
+            {CATEGORIES.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        {hasFilters && (
+          <button type="button" className="btn btn--subtle" onClick={clearFilters}>
+            <FilterX size={16} aria-hidden="true" /> Clear filters
+          </button>
         )}
       </div>
 
@@ -49,7 +124,20 @@ export default function TicketsPage() {
         />
       )}
 
-      {state.status === 'success' && state.data.length === 0 && (
+      {state.status === 'success' && state.data.length === 0 && hasFilters && (
+        <StateMessage
+          icon={<FilterX size={32} />}
+          title="No tickets match these filters"
+          description="Try a different status, priority or category."
+          action={
+            <button type="button" className="btn btn--default" onClick={clearFilters}>
+              Clear filters
+            </button>
+          }
+        />
+      )}
+
+      {state.status === 'success' && state.data.length === 0 && !hasFilters && (
         <StateMessage
           icon={<Inbox size={32} />}
           title="No tickets yet"
@@ -69,6 +157,7 @@ export default function TicketsPage() {
               <tr>
                 <th className="col-key">Key</th>
                 <th>Title</th>
+                <th className="col-category">Category</th>
                 <th className="col-status">Status</th>
                 <th className="col-priority">Priority</th>
                 <th className="col-date">Created</th>
@@ -84,6 +173,7 @@ export default function TicketsPage() {
                     </Link>
                   </td>
                   <td className="ticket-table__title">{ticket.title}</td>
+                  <td className="col-category">{ticket.category ?? '—'}</td>
                   <td className="col-status">
                     <StatusLozenge status={ticket.status} />
                   </td>

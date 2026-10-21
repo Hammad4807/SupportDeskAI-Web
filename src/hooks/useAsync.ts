@@ -27,5 +27,9 @@ export function useAsync<T>(load: (signal: AbortSignal) => Promise<T>, deps: Dep
   }, [...deps, attempt])
 
   const retry = () => setAttempt((n) => n + 1)
-  return { state, retry }
+
+  // Replaces the loaded data without a new request, e.g. with the ticket returned by a save.
+  const setData = (data: T) => setState({ status: 'success', data })
+
+  return { state, retry, setData }
 }
