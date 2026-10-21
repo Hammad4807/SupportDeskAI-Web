@@ -2,7 +2,8 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { X } from 'lucide-react'
 import { createTicket } from '../api/tickets.ts'
 import { ApiError } from '../api/client.ts'
-import { DESCRIPTION_MAX, DESCRIPTION_MIN, TITLE_MAX, TITLE_MIN } from '../utils/ticketMeta.ts'
+import { DESCRIPTION_MAX, TITLE_MAX } from '../utils/ticketMeta.ts'
+import { validateTicketFields, type TicketFieldErrors } from '../utils/ticketValidation.ts'
 import type { Ticket } from '../types/ticket.ts'
 import './CreateTicketModal.css'
 
@@ -11,32 +12,10 @@ interface CreateTicketModalProps {
   onCreated: (ticket: Ticket) => void
 }
 
-interface FormErrors {
-  title?: string
-  description?: string
-}
-
-// Same rules as the backend validator, so most mistakes are caught before calling the API.
-function validate(title: string, description: string): FormErrors {
-  const errors: FormErrors = {}
-  const t = title.trim()
-  const d = description.trim()
-
-  if (!t) errors.title = 'Title is required.'
-  else if (t.length < TITLE_MIN) errors.title = `Title must be at least ${TITLE_MIN} characters.`
-  else if (t.length > TITLE_MAX) errors.title = `Title must not exceed ${TITLE_MAX} characters.`
-
-  if (!d) errors.description = 'Description is required.'
-  else if (d.length < DESCRIPTION_MIN) errors.description = `Description must be at least ${DESCRIPTION_MIN} characters.`
-  else if (d.length > DESCRIPTION_MAX) errors.description = `Description must not exceed ${DESCRIPTION_MAX} characters.`
-
-  return errors
-}
-
 export default function CreateTicketModal({ onClose, onCreated }: CreateTicketModalProps) {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
-  const [errors, setErrors] = useState<FormErrors>({})
+  const [errors, setErrors] = useState<TicketFieldErrors>({})
   const [submitError, setSubmitError] = useState<{ message: string; traceId?: string } | null>(null)
   const [isSubmitting, setSubmitting] = useState(false)
 
@@ -53,7 +32,7 @@ export default function CreateTicketModal({ onClose, onCreated }: CreateTicketMo
     e.preventDefault()
     setSubmitError(null)
 
-    const clientErrors = validate(title, description)
+    const clientErrors = validateTicketFields(title, description)
     setErrors(clientErrors)
     if (clientErrors.title || clientErrors.description) return
 
