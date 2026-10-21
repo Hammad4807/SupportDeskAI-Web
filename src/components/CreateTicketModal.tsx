@@ -37,7 +37,7 @@ export default function CreateTicketModal({ onClose, onCreated }: CreateTicketMo
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [errors, setErrors] = useState<FormErrors>({})
-  const [submitError, setSubmitError] = useState<string | null>(null)
+  const [submitError, setSubmitError] = useState<{ message: string; traceId?: string } | null>(null)
   const [isSubmitting, setSubmitting] = useState(false)
 
   // Close on Escape, like Jira.
@@ -66,7 +66,10 @@ export default function CreateTicketModal({ onClose, onCreated }: CreateTicketMo
       if (err instanceof ApiError && err.status === 400 && (err.fieldErrors.Title || err.fieldErrors.Description)) {
         setErrors({ title: err.fieldErrors.Title?.[0], description: err.fieldErrors.Description?.[0] })
       } else {
-        setSubmitError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
+        setSubmitError({
+          message: err instanceof Error ? err.message : 'Something went wrong. Please try again.',
+          traceId: err instanceof ApiError ? err.traceId : undefined,
+        })
       }
     } finally {
       setSubmitting(false)
@@ -91,7 +94,8 @@ export default function CreateTicketModal({ onClose, onCreated }: CreateTicketMo
 
             {submitError && (
               <div className="banner banner--error" role="alert">
-                {submitError}
+                {submitError.message}
+                {submitError.traceId && <div className="banner__trace">Error ID: {submitError.traceId}</div>}
               </div>
             )}
 
