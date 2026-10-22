@@ -3,6 +3,7 @@
 // Backend enums are sent as numbers: see utils/ticketMeta.ts for their names.
 export type TicketStatus = 0 | 1 | 2 | 3
 export type TicketPriority = 0 | 1 | 2 | 3
+export type TicketCategory = 0 | 1 | 2 | 3 | 4 | 5 | 6
 
 // TicketResponse DTO
 export interface Ticket {
@@ -12,7 +13,7 @@ export interface Ticket {
   status: TicketStatus
   priority: TicketPriority
   // AI analysis results: null until the ticket has been analyzed
-  category: string | null
+  category: TicketCategory | null
   sentiment: string | null
   aiSummary: string | null
   suggestedAction: string | null
@@ -37,7 +38,7 @@ export interface UpdateTicketRequest {
 export interface TicketFilters {
   status?: TicketStatus
   priority?: TicketPriority
-  category?: string
+  category?: TicketCategory
 }
 
 // "Groq" is the real AI, "Mock" the fake one used without an API key
@@ -46,7 +47,7 @@ export type AiProvider = 'Groq' | 'Mock' | string
 // TicketAnalysisResponse DTO (POST /api/tickets/{id}/analyze)
 export interface TicketAnalysis {
   ticketId: string
-  category: string
+  category: TicketCategory
   priority: TicketPriority
   sentiment: string
   summary: string

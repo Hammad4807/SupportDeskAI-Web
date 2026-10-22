@@ -14,7 +14,7 @@ export function getTickets(filters: TicketFilters = {}, signal?: AbortSignal) {
   const params = new URLSearchParams()
   if (filters.status !== undefined) params.set('status', String(filters.status))
   if (filters.priority !== undefined) params.set('priority', String(filters.priority))
-  if (filters.category) params.set('category', filters.category)
+  if (filters.category !== undefined) params.set('category', String(filters.category))
 
   const query = params.toString()
   return apiRequest<Ticket[]>(`/api/tickets${query ? `?${query}` : ''}`, { signal })
