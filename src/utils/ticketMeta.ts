@@ -1,6 +1,6 @@
-import type { TicketPriority, TicketStatus } from '../types/ticket.ts'
+import type { TicketCategory, TicketPriority, TicketStatus } from '../types/ticket.ts'
 
-// The API sends Status/Priority as numbers (0..3), matching the backend enums.
+// The API sends Status/Priority (0..3) and Category (0..6) as numbers, matching the backend enums.
 // These maps turn each number into its display name and UI styling.
 
 export type LozengeTone = 'neutral' | 'info' | 'success' | 'closed'
@@ -19,22 +19,26 @@ export const PRIORITY: Record<TicketPriority, { name: string }> = {
   3: { name: 'Critical' },
 }
 
-// Same allowed values as the backend AiAllowedValues (the AI may only return these).
-export const CATEGORIES = [
-  'Account Access',
-  'Billing',
-  'Technical Issue',
-  'Bug Report',
-  'Feature Request',
-  'General Inquiry',
-  'Other',
-] as const
+// Same order as the backend TicketCategory enum.
+export const CATEGORY: Record<TicketCategory, { name: string }> = {
+  0: { name: 'Account Access' },
+  1: { name: 'Billing' },
+  2: { name: 'Technical Issue' },
+  3: { name: 'Bug Report' },
+  4: { name: 'Feature Request' },
+  5: { name: 'General Inquiry' },
+  6: { name: 'Other' },
+}
 
 export const SENTIMENTS = ['Positive', 'Neutral', 'Negative', 'Frustrated', 'Angry'] as const
 
-// All four values, for dropdowns: [0, 1, 2, 3]
+// All values, for dropdowns
 export const STATUS_VALUES: TicketStatus[] = [0, 1, 2, 3]
 export const PRIORITY_VALUES: TicketPriority[] = [0, 1, 2, 3]
+export const CATEGORY_VALUES: TicketCategory[] = [0, 1, 2, 3, 4, 5, 6]
+
+// Category name for display, or "—" when the ticket is not analyzed yet
+export const categoryName = (category: TicketCategory | null) => (category === null ? '—' : (CATEGORY[category]?.name ?? '—'))
 
 // Jira-style short key for display: first 8 characters of the UUID,
 // e.g. "3f2b8c1e-4a7d-..." -> "SD-3F2B8C1E". URLs and API calls use the full id.

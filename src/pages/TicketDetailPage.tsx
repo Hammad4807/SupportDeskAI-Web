@@ -9,7 +9,7 @@ import StateMessage from '../components/StateMessage.tsx'
 import StatusSelect from '../components/StatusSelect.tsx'
 import EditTicketForm from '../components/EditTicketForm.tsx'
 import AiInsightsPanel from '../components/AiInsightsPanel.tsx'
-import { isValidTicketId, PRIORITY, PRIORITY_VALUES, ticketKey } from '../utils/ticketMeta.ts'
+import { categoryName, isValidTicketId, PRIORITY, PRIORITY_VALUES, ticketKey } from '../utils/ticketMeta.ts'
 import { formatDateTime, formatRelative } from '../utils/format.ts'
 import type { Ticket, TicketPriority, TicketStatus } from '../types/ticket.ts'
 import './TicketDetailPage.css'
@@ -163,7 +163,13 @@ export default function TicketDetailPage() {
                 </dd>
 
                 <dt>Category</dt>
-                <dd>{state.data.category ?? <span className="details-panel__empty">None</span>}</dd>
+                <dd>
+                  {state.data.category === null ? (
+                    <span className="details-panel__empty">None</span>
+                  ) : (
+                    categoryName(state.data.category)
+                  )}
+                </dd>
 
                 <dt>Sentiment</dt>
                 <dd>{state.data.sentiment ?? <span className="details-panel__empty">None</span>}</dd>

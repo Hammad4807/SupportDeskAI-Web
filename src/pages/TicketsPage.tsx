@@ -6,22 +6,31 @@ import { useLayout } from '../hooks/useLayout.ts'
 import StatusLozenge from '../components/StatusLozenge.tsx'
 import PriorityIcon from '../components/PriorityIcon.tsx'
 import StateMessage from '../components/StateMessage.tsx'
-import { CATEGORIES, PRIORITY, PRIORITY_VALUES, STATUS, STATUS_VALUES, ticketKey } from '../utils/ticketMeta.ts'
+import {
+  CATEGORY,
+  CATEGORY_VALUES,
+  PRIORITY,
+  PRIORITY_VALUES,
+  STATUS,
+  STATUS_VALUES,
+  categoryName,
+  ticketKey,
+} from '../utils/ticketMeta.ts'
 import { formatDate, formatDateTime } from '../utils/format.ts'
-import type { TicketFilters, TicketPriority, TicketStatus } from '../types/ticket.ts'
+import type { TicketCategory, TicketFilters, TicketPriority, TicketStatus } from '../types/ticket.ts'
 import './TicketsPage.css'
 
-// Reads "?status=0&priority=2&category=Billing" from the URL. Unknown values are ignored,
+// Reads "?status=0&priority=2&category=1" from the URL. Unknown values are ignored,
 // so a link like /tickets?status=0 (from the dashboard) opens the list already filtered.
 function readFilters(params: URLSearchParams): TicketFilters {
-  const toLevel = (value: string | null) => {
+  const toNumber = (value: string | null, max: number) => {
     const n = Number(value)
-    return value !== null && value !== '' && Number.isInteger(n) && n >= 0 && n <= 3 ? n : undefined
+    return value !== null && value !== '' && Number.isInteger(n) && n >= 0 && n <= max ? n : undefined
   }
   return {
-    status: toLevel(params.get('status')) as TicketStatus | undefined,
-    priority: toLevel(params.get('priority')) as TicketPriority | undefined,
-    category: params.get('category') || undefined,
+    status: toNumber(params.get('status'), 3) as TicketStatus | undefined,
+    priority: toNumber(params.get('priority'), 3) as TicketPriority | undefined,
+    category: toNumber(params.get('category'), 6) as TicketCategory | undefined,
   }
 }
 
@@ -30,7 +39,7 @@ export default function TicketsPage() {
   const { refreshKey, openCreateModal } = useLayout()
   const [searchParams, setSearchParams] = useSearchParams()
   const filters = readFilters(searchParams)
-  const hasFilters = filters.status !== undefined || filters.priority !== undefined || !!filters.category
+  const hasFilters = filters.status !== undefined || filters.priority !== undefined || filters.category !== undefined
 
   // The filters live in the URL, so the list reloads whenever the query string changes.
   const { state, retry } = useAsync((signal) => getTickets(filters, signal), [refreshKey, searchParams.toString()])
@@ -93,9 +102,9 @@ export default function TicketsPage() {
           <span className="filter__label">Category</span>
           <select className="filter__select" value={filters.category ?? ''} onChange={(e) => setFilter('category', e.target.value)}>
             <option value="">All</option>
-            {CATEGORIES.map((c) => (
+            {CATEGORY_VALUES.map((c) => (
               <option key={c} value={c}>
-                {c}
+                {CATEGORY[c].name}
               </option>
             ))}
           </select>
@@ -173,7 +182,7 @@ export default function TicketsPage() {
                     </Link>
                   </td>
                   <td className="ticket-table__title">{ticket.title}</td>
-                  <td className="col-category">{ticket.category ?? '—'}</td>
+                  <td className="col-category">{categoryName(ticket.category)}</td>
                   <td className="col-status">
                     <StatusLozenge status={ticket.status} />
                   </td>

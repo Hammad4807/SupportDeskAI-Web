@@ -3,6 +3,7 @@ import { LoaderCircle, Sparkles } from 'lucide-react'
 import { analyzeTicket, getTicket } from '../api/tickets.ts'
 import { toApiError, type ApiError } from '../api/client.ts'
 import type { Ticket } from '../types/ticket.ts'
+import { categoryName } from '../utils/ticketMeta.ts'
 import DraftReplyBox from './DraftReplyBox.tsx'
 import ProviderBadge from './ProviderBadge.tsx'
 import './AiInsightsPanel.css'
@@ -70,7 +71,7 @@ export default function AiInsightsPanel({ ticket, onTicketUpdated }: AiInsightsP
         <dl className="ai-panel__grid">
           <div>
             <dt>Category</dt>
-            <dd>{ticket.category}</dd>
+            <dd>{categoryName(ticket.category)}</dd>
           </div>
           <div>
             <dt>Sentiment</dt>
