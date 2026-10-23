@@ -3,6 +3,9 @@
 A Jira-style React frontend for the **SupportDesk AI** API (separate repository: **SupportDeskAI**).
 Built with **React 19 + TypeScript + Vite**.
 
+This app is optional (Swagger is enough for the API). The database setup, endpoint examples and the MCP server are
+documented in the API repository's README.
+
 ## Features
 
 | Page | What you can do | API |
@@ -10,7 +13,7 @@ Built with **React 19 + TypeScript + Vite**.
 | **Dashboard** (`/dashboard`) | Ticket counts (total, open, in progress, resolved, closed, high priority, not analyzed); cards link to the filtered list | `GET /api/dashboard/summary` |
 | **Tickets** (`/tickets`) | List with Status / Priority / Category filters (kept in the URL), create a ticket | `GET /api/tickets`, `POST /api/tickets` |
 | **Ticket detail** (`/tickets/:id`) | Edit title and description, change status and priority | `GET`, `PUT /api/tickets/{id}`, `PATCH /api/tickets/{id}/status` |
-| **AI insights** (on the detail page) | Analyze with AI (category, sentiment, summary, suggested action), draft a reply in an editable box with Copy to clipboard | `POST /api/tickets/{id}/analyze`, `POST /api/tickets/{id}/draft-reply` |
+| **AI insights** (on the detail page) | Analyze with AI (category, priority, sentiment, summary, suggested action; saved on the ticket), draft a reply in an editable box with Copy to clipboard | `POST /api/tickets/{id}/analyze`, `POST /api/tickets/{id}/draft-reply` |
 
 AI drafts are **never sent**: there is no Send button. The agent reviews, edits and copies the text.
 When the API uses the mock AI provider, results are marked with a "Mock AI" badge.
@@ -32,8 +35,9 @@ npm install
 npm run dev
 ```
 
-Open **http://localhost:5173**. The API must be running, and its CORS setting must allow `http://localhost:5173`
-(the default in the API's `appsettings.json`).
+Open **http://localhost:5173** (it redirects to `/dashboard`). The API must be running, and its CORS setting must
+allow `http://localhost:5173` (the default in the API's `appsettings.json`). The port is fixed (`strictPort` in
+`vite.config.ts`): if 5173 is already in use, `npm run dev` stops with an error instead of picking another port.
 
 ## Configuration
 
@@ -66,10 +70,12 @@ src/
                 AiInsightsPanel, DraftReplyBox, StatusLozenge, PriorityIcon, ProviderBadge, Flag,
                 StateMessage, ErrorBoundary
   hooks/        useAsync (load data with loading/error state and cancellation), useLayout
-  utils/        ticketMeta (status/priority names, allowed categories), ticketValidation, format
+  utils/        ticketMeta (status/priority/category names, sentiments, length limits), ticketValidation, format
 ```
 
-Status and priority are sent by the API as numbers (0..3); `src/utils/ticketMeta.ts` maps them to names and colours.
+Status and priority (0..3) and category (0..6) are sent by the API as numbers, the same as the backend enums;
+`src/utils/ticketMeta.ts` maps them to names and colours. The list filters use the same numbers in the URL,
+e.g. `/tickets?status=0&priority=2&category=1`.
 
 ## Known limitations
 
