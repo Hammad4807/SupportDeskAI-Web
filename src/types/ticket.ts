@@ -17,6 +17,9 @@ export interface Ticket {
   sentiment: string | null
   aiSummary: string | null
   suggestedAction: string | null
+  // The ticket's owner (the user who created it)
+  createdByUserId: string | null
+  createdByName: string | null
   createdAt: string // ISO date, UTC
   updatedAt: string | null // null until the ticket is modified
 }

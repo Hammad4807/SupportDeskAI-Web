@@ -360,6 +360,43 @@ a {
   color: var(--color-text-danger);
 }
 
+.banner--info {
+  background: var(--color-bg-selected);
+  color: var(--color-text);
+}
+
+.banner--success {
+  background: #dcfff1;
+  color: #216e4e;
+}
+
+/* "Loading…" while the logged-in user is being loaded (RequireAuth, Google callback) */
+.auth-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 50vh;
+  color: var(--color-text-subtle);
+}
+
+/* Spinning loader icon (moved here from AiInsightsPanel.css, it is now used on several pages) */
+.spin {
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spin {
+    animation: none;
+  }
+}
+
 /* ---------- Flag (toast) ---------- */
 .flag {
   position: fixed;

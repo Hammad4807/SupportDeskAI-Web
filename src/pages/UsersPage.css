@@ -1,0 +1,55 @@
+.users-intro {
+  margin: -8px 0 20px;
+  color: var(--color-text-subtle);
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.users-table th {
+  height: 36px;
+  padding: 0 8px;
+  border-bottom: 2px solid var(--color-border);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-subtle);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.users-table td {
+  height: 44px;
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
+}
+
+.users-table__you {
+  margin-left: 6px;
+  font-size: 12px;
+  color: var(--color-text-subtlest);
+}
+
+.users-table__email,
+.users-table__date {
+  color: var(--color-text-subtle);
+  white-space: nowrap;
+}
+
+.role-select {
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid var(--color-border-input);
+  border-radius: var(--radius);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.role-select:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}

@@ -4,6 +4,8 @@ import { CircleAlert, Pencil, RefreshCw, SearchX } from 'lucide-react'
 import { getTicket, updateTicket, updateTicketStatus } from '../api/tickets.ts'
 import { toApiError, type ApiError } from '../api/client.ts'
 import { useAsync } from '../hooks/useAsync.ts'
+import { useAuth } from '../hooks/useAuth.ts'
+import { allowedStatuses, canChangePriority, canEditTicket, canUseAi } from '../auth/permissions.ts'
 import PriorityIcon from '../components/PriorityIcon.tsx'
 import StateMessage from '../components/StateMessage.tsx'
 import StatusSelect from '../components/StatusSelect.tsx'
@@ -15,8 +17,10 @@ import type { Ticket, TicketPriority, TicketStatus } from '../types/ticket.ts'
 import './TicketDetailPage.css'
 
 // Jira-style issue view for one ticket (FR-03), with editing (FR-04), status changes (FR-05)
-// and AI insights (FR-06).
+// and AI insights (FR-06). What a user can change depends on their role (auth/permissions.ts):
+// a Customer may edit their own Open ticket and close it; priority and AI are for Staff/Admin.
 export default function TicketDetailPage() {
+  const { user } = useAuth()
   const { id } = useParams()
   const validId = isValidTicketId(id)
   const { state, retry, setData } = useAsync((signal) => getTicket(id ?? '', signal), [id])
@@ -117,9 +121,11 @@ export default function TicketDetailPage() {
               <>
                 <div className="issue__title-row">
                   <h1 className="issue__title">{state.data.title}</h1>
-                  <button type="button" className="btn btn--default" onClick={() => setEditing(true)}>
-                    <Pencil size={14} aria-hidden="true" /> Edit
-                  </button>
+                  {canEditTicket(user, state.data) && (
+                    <button type="button" className="btn btn--default" onClick={() => setEditing(true)}>
+                      <Pencil size={14} aria-hidden="true" /> Edit
+                    </button>
+                  )}
                 </div>
 
                 <section className="issue__section">
@@ -129,14 +135,15 @@ export default function TicketDetailPage() {
               </>
             )}
 
-            <AiInsightsPanel ticket={state.data} onTicketUpdated={setData} />
+            {canUseAi(user) && <AiInsightsPanel ticket={state.data} onTicketUpdated={setData} />}
           </div>
 
           <aside className="issue__side">
             <div className="issue__status">
               <StatusSelect
                 status={state.data.status}
-                disabled={isSaving}
+                options={allowedStatuses(user, state.data)}
+                disabled={isSaving || allowedStatuses(user, state.data).length === 1}
                 onChange={(status) => changeStatus(state.data, status)}
               />
             </div>
@@ -146,21 +153,31 @@ export default function TicketDetailPage() {
               <dl className="details-panel__list">
                 <dt>Priority</dt>
                 <dd className="details-panel__priority">
-                  <PriorityIcon priority={state.data.priority} showLabel={false} />
-                  <select
-                    className="details-select"
-                    value={state.data.priority}
-                    disabled={isSaving}
-                    aria-label="Change priority"
-                    onChange={(e) => changePriority(state.data, Number(e.target.value) as TicketPriority)}
-                  >
-                    {PRIORITY_VALUES.map((p) => (
-                      <option key={p} value={p}>
-                        {PRIORITY[p].name}
-                      </option>
-                    ))}
-                  </select>
+                  {canChangePriority(user) ? (
+                    <>
+                      <PriorityIcon priority={state.data.priority} showLabel={false} />
+                      <select
+                        className="details-select"
+                        value={state.data.priority}
+                        disabled={isSaving}
+                        aria-label="Change priority"
+                        onChange={(e) => changePriority(state.data, Number(e.target.value) as TicketPriority)}
+                      >
+                        {PRIORITY_VALUES.map((p) => (
+                          <option key={p} value={p}>
+                            {PRIORITY[p].name}
+                          </option>
+                        ))}
+                      </select>
+                    </>
+                  ) : (
+                    // Customer: read-only, the support team sets the priority
+                    <PriorityIcon priority={state.data.priority} />
+                  )}
                 </dd>
+
+                <dt>Reporter</dt>
+                <dd>{state.data.createdByName ?? <span className="details-panel__empty">Unknown</span>}</dd>
 
                 <dt>Category</dt>
                 <dd>

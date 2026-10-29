@@ -1,0 +1,72 @@
+/* Login, sign-up and Google callback: a centered card, like Atlassian's login page. */
+.auth-page {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 64px 16px;
+  background: var(--color-bg-sunken);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+  padding: 32px 40px;
+  border-radius: 4px;
+  background: var(--color-bg);
+  box-shadow: var(--shadow-overlay);
+}
+
+.auth-card__logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 24px;
+  color: var(--color-brand);
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.auth-card__logo span {
+  color: var(--color-text);
+}
+
+.auth-card__title {
+  margin: 0 0 24px;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  color: var(--color-text-subtle);
+}
+
+.auth-card .btn {
+  width: 100%;
+  height: 40px;
+}
+
+.auth-card__divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+  font-size: 12px;
+  color: var(--color-text-subtlest);
+}
+
+.auth-card__divider::before,
+.auth-card__divider::after {
+  content: '';
+  flex: 1;
+  border-top: 1px solid var(--color-border);
+}
+
+.auth-card__footer {
+  margin: 24px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border);
+  text-align: center;
+  font-size: 13px;
+  color: var(--color-text-subtle);
+}
+

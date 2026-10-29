@@ -3,6 +3,8 @@ import { CircleAlert, FilterX, Inbox, Plus, RefreshCw } from 'lucide-react'
 import { getTickets } from '../api/tickets.ts'
 import { useAsync } from '../hooks/useAsync.ts'
 import { useLayout } from '../hooks/useLayout.ts'
+import { useAuth } from '../hooks/useAuth.ts'
+import { isStaffOrAdmin } from '../auth/permissions.ts'
 import StatusLozenge from '../components/StatusLozenge.tsx'
 import PriorityIcon from '../components/PriorityIcon.tsx'
 import StateMessage from '../components/StateMessage.tsx'
@@ -34,9 +36,12 @@ function readFilters(params: URLSearchParams): TicketFilters {
   }
 }
 
-// Jira "List" view of all tickets (FR-02), with filters (status, priority, category).
+// Jira "List" view of the tickets (FR-02), with filters (status, priority, category).
+// The API decides which tickets come back: Staff/Admin get all, a Customer only their own.
 export default function TicketsPage() {
   const { refreshKey, openCreateModal } = useLayout()
+  const { user } = useAuth()
+  const isTeam = isStaffOrAdmin(user) // the support team also sees who reported each ticket
   const [searchParams, setSearchParams] = useSearchParams()
   const filters = readFilters(searchParams)
   const hasFilters = filters.status !== undefined || filters.priority !== undefined || filters.category !== undefined
@@ -64,7 +69,7 @@ export default function TicketsPage() {
       </nav>
 
       <div className="page__header">
-        <h1 className="page__title">Tickets</h1>
+        <h1 className="page__title">{isTeam ? 'Tickets' : 'My tickets'}</h1>
         {state.status === 'success' && state.data.length > 0 && (
           <span className="page__count">
             {state.data.length} {state.data.length === 1 ? 'ticket' : 'tickets'}
@@ -150,7 +155,11 @@ export default function TicketsPage() {
         <StateMessage
           icon={<Inbox size={32} />}
           title="No tickets yet"
-          description="Create the first support ticket to get started."
+          description={
+            isTeam
+              ? 'Create the first support ticket to get started.'
+              : 'Having a problem? Create a ticket and our support team will get back to you.'
+          }
           action={
             <button type="button" className="btn btn--primary" onClick={openCreateModal}>
               <Plus size={16} aria-hidden="true" /> Create ticket
@@ -166,6 +175,7 @@ export default function TicketsPage() {
               <tr>
                 <th className="col-key">Key</th>
                 <th>Title</th>
+                {isTeam && <th className="col-reporter">Reporter</th>}
                 <th className="col-category">Category</th>
                 <th className="col-status">Status</th>
                 <th className="col-priority">Priority</th>
@@ -182,6 +192,7 @@ export default function TicketsPage() {
                     </Link>
                   </td>
                   <td className="ticket-table__title">{ticket.title}</td>
+                  {isTeam && <td className="col-reporter">{ticket.createdByName ?? '—'}</td>}
                   <td className="col-category">{categoryName(ticket.category)}</td>
                   <td className="col-status">
                     <StatusLozenge status={ticket.status} />

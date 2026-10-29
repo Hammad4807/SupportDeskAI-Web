@@ -1,8 +1,14 @@
 import { NavLink } from 'react-router'
-import { LayoutDashboard, ListTodo } from 'lucide-react'
+import { LayoutDashboard, ListTodo, Users } from 'lucide-react'
+import { useAuth } from '../../hooks/useAuth.ts'
+import { canManageUsers, canSeeDashboard, isStaffOrAdmin } from '../../auth/permissions.ts'
 
-// Project sidebar with the main navigation links.
+const linkClass = ({ isActive }: { isActive: boolean }) => `sidebar__link${isActive ? ' is-active' : ''}`
+
+// Project sidebar with the main navigation links. Each user only sees the links their role may use.
 export default function Sidebar() {
+  const { user } = useAuth()
+
   return (
     <nav className="sidebar" aria-label="Project">
       <div className="sidebar__project">
@@ -14,14 +20,26 @@ export default function Sidebar() {
       </div>
 
       <div className="sidebar__section-label">Support</div>
-      <NavLink to="/dashboard" className={({ isActive }) => `sidebar__link${isActive ? ' is-active' : ''}`}>
-        <LayoutDashboard size={16} aria-hidden="true" />
-        Dashboard
-      </NavLink>
-      <NavLink to="/tickets" className={({ isActive }) => `sidebar__link${isActive ? ' is-active' : ''}`}>
+      {canSeeDashboard(user) && (
+        <NavLink to="/dashboard" className={linkClass}>
+          <LayoutDashboard size={16} aria-hidden="true" />
+          Dashboard
+        </NavLink>
+      )}
+      <NavLink to="/tickets" className={linkClass}>
         <ListTodo size={16} aria-hidden="true" />
-        Tickets
+        {isStaffOrAdmin(user) ? 'Tickets' : 'My tickets'}
       </NavLink>
+
+      {canManageUsers(user) && (
+        <>
+          <div className="sidebar__section-label">Settings</div>
+          <NavLink to="/users" className={linkClass}>
+            <Users size={16} aria-hidden="true" />
+            Users
+          </NavLink>
+        </>
+      )}
     </nav>
   )
 }

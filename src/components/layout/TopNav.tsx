@@ -1,14 +1,19 @@
 import { Link } from 'react-router'
 import { Plus } from 'lucide-react'
+import { useAuth } from '../../hooks/useAuth.ts'
+import { homePath } from '../../auth/permissions.ts'
+import UserMenu from './UserMenu.tsx'
 
 interface TopNavProps {
   onCreate: () => void
 }
 
 export default function TopNav({ onCreate }: TopNavProps) {
+  const { user } = useAuth()
+
   return (
     <header className="top-nav">
-      <Link to="/dashboard" className="top-nav__logo">
+      <Link to={homePath(user)} className="top-nav__logo">
         <span className="top-nav__logo-mark" aria-hidden="true">
           <svg viewBox="0 0 32 32" width="24" height="24">
             <rect width="32" height="32" rx="6" fill="currentColor" />
@@ -18,10 +23,14 @@ export default function TopNav({ onCreate }: TopNavProps) {
         <span className="top-nav__logo-text">SupportDesk AI</span>
       </Link>
 
+      {/* Every role may create tickets */}
       <button type="button" className="btn btn--primary" onClick={onCreate}>
         <Plus size={16} aria-hidden="true" />
         Create
       </button>
+
+      <div className="top-nav__spacer" />
+      <UserMenu />
     </header>
   )
 }
